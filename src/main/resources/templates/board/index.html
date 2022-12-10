@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout=http://www.ultraq.net.nz/thymeleaf/layout layout:decorate="~{layouts/layout1}">
+
+<div layout:fragment="content">
+<div class="container">
+		
+	<form>
+		<div class="form-inline justify-content-center mb-5" th:object="${searchCond}">
+			<h5 class="mr-3">게시글수 :  [[${pagination.listCnt}]] 개</h5>		
+			<select class="form-control mr-3" name="searchType" th:field="*{searchType}">
+				<option value="title">제목</option>
+				<option value="username">작성자</option>
+				<option value="content">내용</option>
+			</select> 
+			<input type="text" class="form-control mr-3" th:field="*{keyword}" placeholder="검색어를 입력해주세요." size="50"> 
+			
+			<select th:field="*{searchDateType}" class="form-control mr-3" style="width: auto;">
+				<option value="all">전체기간</option>
+				<option value="1d">1일</option>
+				<option value="1w">1주</option>
+				<option value="1m">1개월</option>
+				<option value="6m">6개월</option>
+			</select>
+			
+			<button  type="submit" class="btn btn-primary">검색</button>
+		 </div>
+	</form>
+	
+	<div class="d-flex justify-content-end">
+		<a href="/board/saveForm"  class="btn btn-success">글작성</a>
+	</div>
+	
+		<div th:each="board : ${boards}" class="card m-2">
+			<div class="card-body">
+				<h4 class="card-title" th:text="${board.title}"></h4>
+				<a th:href="@{'/board/'+${board.id}}" class="btn btn-primary">상세보기</a>
+			</div>
+		</div>
+	
+	<!-- [[${searchCond.getBoardsLink()}]]  <br> 
+	첫번째 페이지 : [[${boards.first}]] <br> [[${pagination.listCnt}]] 개 <br> [[${pagination}]] <br> 현재 페이지 :[[${pagination.curPage}]] -->
+	
+
+	<ul class="pagination justify-content-center mt-5" th:if="${pagination.listCnt>0}">
+		<th:block th:if="${not boards.first}">
+			<li class="page-item" ><a class="page-link" th:href="@{${searchCond.getBoardsLink()} +'&page=1'}">≪</a></li>
+			<li class="page-item" ><a class="page-link" th:href="@{${searchCond.getBoardsLink()}+'&page='+${pagination.prevPage}}">&lt;</a></li>
+		</th:block>
+		
+		<li class="page-item" th:each="page : ${ #numbers.sequence(pagination.startPage, pagination.endPage)  }" 
+			th:classappend="${page eq pagination.curPage} ? 'active':'' ">
+		<a class="page-link" th:href="@{${searchCond.getBoardsLink()}+'&page=' +${page}}">[[${page}]]</a>
+		</li>
+
+		<th:block th:if="${not boards.last}">
+			<li class="page-item"><a class="page-link" th:href="@{${searchCond.getBoardsLink()}+'&page=' + ${pagination.nextPage}}">&gt;</a></li>
+			<li class="page-item"><a class="page-link" th:href="@{${searchCond.getBoardsLink()}+'&page=' + ${boards.totalPages}}">≫</a></li>
+		</th:block>
+	</ul>
+
+
+</div>
+</div>
+
+</html>
